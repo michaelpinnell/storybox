@@ -20,7 +20,7 @@ enum FeederState
 {
   FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE,
   FS_WAIT_FOR_PHOTO_SECOND_EDGE_TO_PASS_LASER,
-  FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO
+  FS_STOP_AND_TAKE_PHOTO
 };
 
 FeederState g_feederState = FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE;
@@ -33,7 +33,7 @@ const char* convertFeederStateToString(int currentState)
   {
     case FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE: return "Wait for First Edge";
     case FS_WAIT_FOR_PHOTO_SECOND_EDGE_TO_PASS_LASER: return "Wait For Second Edge";
-    case FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO: return "Stop and Take Photo";
+    case FS_STOP_AND_TAKE_PHOTO: return "Stop and Take Photo";
     default: return "Unknown";
   };
 }
@@ -99,10 +99,10 @@ void executeNextState()
       //No longer need pickup at this stage, but keep the feed motor going
       stepFeedMotor();
       if(!isLaserBeamObfuscatedByPhoto())
-        g_feederState = FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO;
+        g_feederState = FS_STOP_AND_TAKE_PHOTO;
       break;
 
-    case FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO:
+    case FS_STOP_AND_TAKE_PHOTO:
       takePicture();
       g_feederState = FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE;
       break;      
@@ -131,10 +131,6 @@ void setup()
 void loop()
 /*****************************************************************************/
 {
-  //stepPickupMotor();
-  //stepFeedMotor();
-  
-  /*
   FeederState currentState = g_feederState;
   executeNextState();
   if(currentState != g_feederState) //If old != new
@@ -145,12 +141,6 @@ void loop()
     Serial.print(convertFeederStateToString(g_feederState));
     Serial.println(".");
   }
-  
-  */
-
-  Serial.println("Take picture!)"
-  takePicture();
-  delayMicroseconds(2000);
 }
 
 
