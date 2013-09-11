@@ -43,9 +43,9 @@ void stepPickupMotor()
 {
   digitalWrite(MOTOR1_DIR_PIN, LOW);
   digitalWrite(MOTOR1_STEP_PIN, HIGH);
-  delayMicroseconds(40);          
+  delayMicroseconds(80);          
   digitalWrite(MOTOR1_STEP_PIN, LOW); 
-  delayMicroseconds(40);
+  delayMicroseconds(80);
 }
 
 void stepFeedMotor()
@@ -53,9 +53,9 @@ void stepFeedMotor()
 {
   digitalWrite(MOTOR2_DIR_PIN, HIGH);
   digitalWrite(MOTOR2_STEP_PIN, HIGH);
-  delayMicroseconds(40);          
+  delayMicroseconds(80);          
   digitalWrite(MOTOR2_STEP_PIN, LOW); 
-  delayMicroseconds(40);  
+  delayMicroseconds(80);  
 }
 
 int readPhotocellValue()
@@ -67,7 +67,11 @@ int readPhotocellValue()
 bool isLaserBeamObfuscatedByPhoto()
 /*****************************************************************************/
 {
-  return(readPhotocellValue() < 550);
+  int photocellVal = readPhotocellValue();
+  
+  //if(photocellVal < 800)
+  //  Serial.println(photocellVal);
+  return(photocellVal < 600);
 }
 
 void takePicture()
@@ -127,6 +131,10 @@ void setup()
 void loop()
 /*****************************************************************************/
 {
+  //stepPickupMotor();
+  //stepFeedMotor();
+  
+  /*
   FeederState currentState = g_feederState;
   executeNextState();
   if(currentState != g_feederState) //If old != new
@@ -137,6 +145,12 @@ void loop()
     Serial.print(convertFeederStateToString(g_feederState));
     Serial.println(".");
   }
+  
+  */
+
+  Serial.println("Take picture!)"
+  takePicture();
+  delayMicroseconds(2000);
 }
 
 
