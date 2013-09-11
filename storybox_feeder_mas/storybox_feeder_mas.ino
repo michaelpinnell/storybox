@@ -20,7 +20,7 @@ enum FeederState
 {
   FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE,
   FS_WAIT_FOR_PHOTO_SECOND_EDGE_TO_PASS_LASER,
-  FS_STOP_AND_TAKE_PHOTO
+  FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO
 };
 
 FeederState g_feederState = FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE;
@@ -33,7 +33,7 @@ const char* convertFeederStateToString(int currentState)
   {
     case FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE: return "Wait for First Edge";
     case FS_WAIT_FOR_PHOTO_SECOND_EDGE_TO_PASS_LASER: return "Wait For Second Edge";
-    case FS_STOP_AND_TAKE_PHOTO: return "Stop and Take Photo";
+    case FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO: return "Stop and Take Photo";
     default: return "Unknown";
   };
 }
@@ -43,9 +43,9 @@ void stepPickupMotor()
 {
   digitalWrite(MOTOR1_DIR_PIN, LOW);
   digitalWrite(MOTOR1_STEP_PIN, HIGH);
-  delayMicroseconds(80);          
+  delayMicroseconds(60);          
   digitalWrite(MOTOR1_STEP_PIN, LOW); 
-  delayMicroseconds(80);
+  delayMicroseconds(60);
 }
 
 void stepFeedMotor()
@@ -53,9 +53,9 @@ void stepFeedMotor()
 {
   digitalWrite(MOTOR2_DIR_PIN, HIGH);
   digitalWrite(MOTOR2_STEP_PIN, HIGH);
-  delayMicroseconds(80);          
+  delayMicroseconds(60);          
   digitalWrite(MOTOR2_STEP_PIN, LOW); 
-  delayMicroseconds(80);  
+  delayMicroseconds(60);  
 }
 
 int readPhotocellValue()
@@ -77,8 +77,10 @@ bool isLaserBeamObfuscatedByPhoto()
 void takePicture()
 /*****************************************************************************/
 {
+  digitalWrite(CAMERA_SHOOT_PIN, LOW);
+  delay(50);
   digitalWrite(CAMERA_SHOOT_PIN, HIGH);  //SHOOT
-  delay(2000);    //acutally needs to be 22000
+  delay(1500);    //acutally needs to be 22000
   digitalWrite(CAMERA_SHOOT_PIN, LOW);
   delay(1);
 }
@@ -99,10 +101,10 @@ void executeNextState()
       //No longer need pickup at this stage, but keep the feed motor going
       stepFeedMotor();
       if(!isLaserBeamObfuscatedByPhoto())
-        g_feederState = FS_STOP_AND_TAKE_PHOTO;
+        g_feederState = FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO;
       break;
 
-    case FS_STOP_AND_TAKE_PHOTO:
+    case FS_STOP_PICKUP_MOTOR_AND_FEEDER_AND_TAKE_PHOTO:
       takePicture();
       g_feederState = FS_ENABLE_FEEDER_MOTORS_AND_WAIT_FOR_NEXT_PHOTO_START_EDGE;
       break;      
@@ -118,7 +120,7 @@ void setup()
   Serial.begin(9600);
   // Set button input pin
   
-  pinMode(CAMERA_SHOOT_PIN, INPUT);
+  pinMode(CAMERA_SHOOT_PIN, OUTPUT);
 
   pinMode(MOTOR1_DIR_PIN, OUTPUT);     
   pinMode(MOTOR1_STEP_PIN, OUTPUT);
