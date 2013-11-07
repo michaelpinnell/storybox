@@ -14,7 +14,7 @@
 #define MOTOR2_STEP_PIN  3    // Motor that moves the photo towards the scanner (FEED)
 #define MOTOR2_DIR_PIN   4    // Motor that moves the photo towards the scanner (FEED)
 #define CAMERA_SHOOT_PIN 5    // Pin that triggers camera switch
-#define PHOTOCELL_PIN    A0   // The photocell with a laser being shot at it
+#define PHOTOCELL_PIN    A1   // The photocell with a laser being shot at it
 
 enum FeederState
 {
@@ -68,10 +68,8 @@ bool isLaserBeamObfuscatedByPhoto()
 /*****************************************************************************/
 {
   int photocellVal = readPhotocellValue();
-  
-  //if(photocellVal < 800)
-  //  Serial.println(photocellVal);
-  return(photocellVal < 600);
+  //Serial.println(photocellVal);
+  return(photocellVal < 220);
 }
 
 void takePicture()
